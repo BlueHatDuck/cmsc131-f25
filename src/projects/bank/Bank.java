@@ -13,6 +13,7 @@ public class Bank {
     
     private Account[] accounts;
 
+    // TODO explain "package-private" in your own words
     /**
      * Create a new Bank with a fixed capacity of 100 accounts.
      *
@@ -32,8 +33,11 @@ public class Bank {
      * @param accounts the Account to add (must be non-null)
      * @return true if the account was added; false if a duplicate exists or the bank is full
      */
+    // TODO consider using `account` as parameter name
+    //    - this method accepts a single account
+    //    - using `account` avoids shadowing, which necessitates `this` usage
     public boolean addAccount(Account accounts){
-        
+        // TODO data validation
         if(findAccount(accounts) != -1){
             return false;
         }
@@ -52,6 +56,7 @@ public class Bank {
      *
      * @return count of stored accounts (0..capacity)
      */
+    // TODO consider maintaining this as an attribute to avoid the loop
     public int totalAccounts(){
         int total = 0;
         for(int i = 0; i < this.accounts.length; i++){
@@ -71,7 +76,9 @@ public class Bank {
      * @param accounts the Account to find (may be null)
      * @return the 0-based index of a matching account, or -1 if not found
      */
-    public int findAccount(Account accounts){
+    // TODO revisit problem spec and correct input type
+     public int findAccount(Account accounts){
+        // TODO data validation
         if(accounts != null){
             for(int i = 0; i < this.accounts.length; i++){
                 if(this.accounts[i] != null && this.accounts[i].getAccountID().equals(accounts.getAccountID())){

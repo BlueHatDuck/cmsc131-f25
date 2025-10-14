@@ -43,7 +43,9 @@ public class Account {
                 "The name parameter can not be null nor empty."
                 );
         }
+
         this.balance = initialBalance;
+
         if(accountType != null){
             this.accountType = accountType;
         } else {
@@ -78,6 +80,28 @@ public class Account {
      */
     public double getBalance() {
         return balance;
+    }
+
+     public AccountType getType() { 
+        return accountType; 
+    }
+
+    public static Account make(String inputLine){
+        if (inputLine == null){
+            throw new IllegalArgumentException("Param inputLine can't be null.");
+        }
+        //.split returns an array based on where you split the values so this array contains 4 values
+        String[] tokens = inputLine.split(",");
+        AccountType type = AccountType.valueOf(tokens[0].toUpperCase());
+        String id = tokens[1];
+        String owner = tokens[2];
+        double funds = Double.parseDouble(tokens[3]);
+
+        return new Account(id, owner, type, funds);
+    }
+
+    public String toCSV(){
+        return accountType + "," + accountID + "," + ownerName + "," + balance;
     }
 
 }

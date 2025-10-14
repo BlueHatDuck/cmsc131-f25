@@ -1,85 +1,97 @@
 
 package projects.bank;
 
-/**
- * Simple in-memory bank that stores Account objects in a fixed-size array.
- *
- * <p>This Bank uses a fixed capacity (100) internal array. Accounts are stored
- * in the first available null slot. Uniqueness is determined by the Account's
- * accountID (string equality). The API is intentionally minimal and not
- * thread-safe; callers are responsible for synchronization if needed.
- */
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+
 public class Bank {
     
     private Account[] accounts;
-
-    /**
-     * Create a new Bank with a fixed capacity of 100 accounts.
-     *
-     * <p>The constructor is package-private to match the project's test usage.
-     */
+    private static int totalAcc = 0;
+    
     Bank(){
-        accounts = new Account[100];
+        accounts = new Account[500];
     }
 
-    /**
-     * Add an account to the bank if an account with the same accountID does not
-     * already exist and there is capacity.
-     *
-     * <p>Note: the parameter name "accounts" shadows the internal field name.
-     * The method checks for duplicates by calling {@link #findAccount(Account)}.
-     *
-     * @param accounts the Account to add (must be non-null)
-     * @return true if the account was added; false if a duplicate exists or the bank is full
-     */
-    public boolean addAccount(Account accounts){
+    
+    public boolean addAccount(Account account){
         
-        if(findAccount(accounts) != -1){
+        if(findAccount(account.getAccountID()) != -1){
             return false;
         }
 
         for (int i = 0; i < this.accounts.length; i++) {
             if(this.accounts[i] == null){
-                this.accounts[i] = accounts;
+                this.accounts[i] = account;
+                totalAcc++;
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * Returns the number of non-null accounts currently stored.
-     *
-     * @return count of stored accounts (0..capacity)
-     */
+   
     public int totalAccounts(){
-        int total = 0;
-        for(int i = 0; i < this.accounts.length; i++){
-            if(this.accounts[i] != null)
-                total++;
-        }
-        return total;
+        return totalAcc;
     }
 
-    /**
-     * Find the index of the provided account in the internal array.
-     *
-     * <p>Comparison is performed by calling {@code getAccountID()} on both sides
-     * and using {@link String#equals(Object)}. If the provided account is null
-     * or no matching account is found, this method returns -1.
-     *
-     * @param accounts the Account to find (may be null)
-     * @return the 0-based index of a matching account, or -1 if not found
-     */
-    public int findAccount(Account accounts){
-        if(accounts != null){
-            for(int i = 0; i < this.accounts.length; i++){
-                if(this.accounts[i] != null && this.accounts[i].getAccountID().equals(accounts.getAccountID())){
-                    return i;
-                }
+    
+    public int findAccount(String id){
+        if(id == null){
+            throw new IllegalArgumentException("accountID shouldn't be null.");
+        }
+
+        for(int i = 0; i < totalAccounts(); i++){
+            if(accounts[i].getAccountID().equals(id)){
+                return i;
             }
         }
+
         return -1;
 
     }
+
+    public boolean loadAccounts(String fileName){
+        File accountsFile = new File(fileName);
+
+        Scanner scan;
+
+        try {
+            scan = new Scanner(accountsFile);
+            while (scan.hasNextLine()) {
+                String curString = scan.nextLine();
+                Account a = Account.make(curString);
+                
+            }
+            scan.close();
+            return true;
+        } catch(FileNotFoundException e) {
+            
+            e.printStackTrace(); // report error and move on
+            return false;
+        }
+    }
+
+    public boolean writeAccounts( String fileName ) {
+        File file = new File(fileName);
+        FileWriter writer;
+
+        try {
+            writer = new FileWriter(file);
+            for (int i = 0; i < totalAcc; i++) {
+                String line = accounts[i].toCSV();
+                writer.write(line + "\n");
+            }
+            writer.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+
+    }
+
 }

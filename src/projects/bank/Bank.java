@@ -1,97 +1,139 @@
-
 package projects.bank;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-
 public class Bank {
-    
+
     private Account[] accounts;
-    private static int totalAcc = 0;
-    
-    Bank(){
-        accounts = new Account[500];
+    private int idxNextAccount;
+    private final int newAccountsIncrement = 100;
+
+    public Bank() {
+        accounts = new Account[newAccountsIncrement];
     }
 
-    
-    public boolean addAccount(Account account){
-        
-        if(findAccount(account.getAccountID()) != -1){
+    /**
+     * Add an account to this Bank.
+     * @param acct - Account to add.
+     * @return - true if successful, false if unsuccessful.
+     * @throws IllegalArgumentException - If acct is null.
+     */
+    public boolean add(Account acct) {
+        if (acct == null) {
+            throw new IllegalArgumentException("account must not be null.");
+        }
+        if (find(acct.getID()) == -1) {
+            try {
+                accounts[idxNextAccount] = acct;
+            } catch(ArrayIndexOutOfBoundsException e) {
+                Account[] accountsExtended = new Account[
+                    accounts.length + newAccountsIncrement
+                ];
+                for (int idx = 0; idx < accounts.length; idx++) {
+                    accountsExtended[idx] = accounts[idx];
+                }
+                accountsExtended[idxNextAccount] = acct;
+                accounts = accountsExtended;
+            }
+            idxNextAccount++;
+            return true;
+        } else {
             return false;
         }
 
-        for (int i = 0; i < this.accounts.length; i++) {
-            if(this.accounts[i] == null){
-                this.accounts[i] = account;
-                totalAcc++;
-                return true;
-            }
-        }
-        return false;
     }
 
-   
-    public int totalAccounts(){
-        return totalAcc;
-    }
-
-    
-    public int findAccount(String id){
-        if(id == null){
-            throw new IllegalArgumentException("accountID shouldn't be null.");
+    /**
+     * Find an account in this Bank using its unique ID.
+     * @param accountID - Unique ID.
+     * @return - Reference to account in this Bank, or -1 if no match.
+     * @throws IllegalArgumentException if accountID is null.
+     */
+    public int find(String accountID) {
+        if (accountID == null) {
+            throw new IllegalArgumentException("accountID must not be null.");
         }
-
-        for(int i = 0; i < totalAccounts(); i++){
-            if(accounts[i].getAccountID().equals(id)){
-                return i;
+        for (int idxAcct = 0; idxAcct < idxNextAccount; idxAcct++) {
+            if (accounts[idxAcct].getID().equals(accountID)) {
+                return idxAcct;
             }
         }
-
         return -1;
-
     }
 
-    public boolean loadAccounts(String fileName){
-        File accountsFile = new File(fileName);
+    /**
+     * @return - Number of accounts in this Bank.
+     */
+    public int getCount() {
+        return idxNextAccount;
+    }
 
+    public boolean loadAccounts(String filename){
+        boolean result = true;
+        File inputFile = new File(filename);
         Scanner scan;
-
         try {
-            scan = new Scanner(accountsFile);
+            scan = new Scanner(inputFile);
             while (scan.hasNextLine()) {
-                String curString = scan.nextLine();
-                Account a = Account.make(curString);
-                
+                String csvString = scan.nextLine();
+                Account account = Account.make(csvString);
+                add(account);
             }
             scan.close();
-            return true;
         } catch(FileNotFoundException e) {
-            
-            e.printStackTrace(); // report error and move on
-            return false;
+            e.printStackTrace();
+            result = false;
         }
-    }
-
-    public boolean writeAccounts( String fileName ) {
-        File file = new File(fileName);
+        return result;
+        }
+    
+    
+    public boolean writeAccounts(String filename){
+        File file = new File(filename);
         FileWriter writer;
-
         try {
             writer = new FileWriter(file);
-            for (int i = 0; i < totalAcc; i++) {
-                String line = accounts[i].toCSV();
-                writer.write(line + "\n");
+            for (int idx = 0; idx < idxNextAccount; idx++) {
+                Account account = accounts[idx];
+                String accountCsv = account.toCSV();
+                writer.write(accountCsv + System.lineSeparator());
             }
             writer.close();
             return true;
-        } catch (IOException e) {
+        } catch(IOException e) {
+            e.printStackTrace();
             return false;
         }
 
     }
+
+    public Account[] getAccounts(){
+        return accounts;
+    }
+
+    public int processTransactions(String filename ){
+        int numTrsProc = 0;
+        Scanner scan;
+        try {
+            scan = new Scanner(new File(filename));
+            while (scan.hasNextLine()) {
+                Transaction trs = Transaction.make(scan.nextLine());
+                int exists = find(trs.getAccountID())
+                if(exists != -1){
+                    Account target = accounts[find(trs.getAccountID())];
+                }
+            }
+        } catch {
+            
+        }
+        
+        return -1;
+    }
+
 
 }

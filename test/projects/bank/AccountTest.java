@@ -1,52 +1,88 @@
-package projects.bank;  // TODO correct package declartion
+package projects.bank;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AccountTest{
+public class AccountTest {
+
     private Account account;
 
     @BeforeEach
-    void setUp(){
-        account = new Account("w132629", "James", AccountType.SAVINGS, 0);
+    void setupAccount() {
+        account = new SavingsAccount(
+            "wz240833",
+            "Anna Gomez",
+            8111.00
+        );
     }
 
     @Test
-    void constructorThrowsForInvalidID() {
+    void testDataValidation() {
+        Exception e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {new CheckingAccount(null, "name", 0.0);}
+        );
+        assertEquals("id cannot be null", e.getMessage());
+
+        e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+                new CheckingAccount("id", null, 0.0);}
+        );
+        assertEquals("ownerName cannot be null", e.getMessage());
+    }
+
+    @Test
+    void testMakeThrowsOnNullInput() {
         Exception exception = assertThrows(
             IllegalArgumentException.class,
-            () -> {new Account(null, "James", AccountType.SAVINGS, 0);} // TODO use enum for account type
+            () -> {Account.make(null);}
         );
         assertEquals(
-            "The ID parameter should not be null nor empty.", 
+            "inputLine cannot be null",
             exception.getMessage()
         );
     }
 
     @Test
-    void constructorThrowsForInvalidName(){
-        Exception exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> {new Account("w132629", null, AccountType.SAVINGS, 0);} // TODO use enum for account type
+    void testMakePreservesData() {
+        Account account2 = Account.make(
+            "savings,wz240833,Anna Gomez,8111.00"
         );
         assertEquals(
-            "The name parameter can not be null nor empty.", 
-            exception.getMessage()
+            account.getID(),
+            account2.getID()
+        );
+        assertEquals(
+            account.getOwnerName(),
+            account2.getOwnerName()
+        );
+        assertEquals(
+            account.getType(),
+            account2.getType()
+        );
+        assertEquals(
+            account.getBalance(),
+            account2.getBalance(),
+            1e-2
         );
     }
 
     @Test
-    void constructorThrowsForInvalidType(){
-        Exception exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> {new Account("w132629", "James", null, 0);}
-        );
+    void testToCSV() {
         assertEquals(
-            "The Account type can not be null nor empty.", 
-            exception.getMessage()
+            "savings,wz240833,Anna Gomez,8111.00",
+            account.toCSV()
         );
     }
+
+    @Test
+    void testDebit() {
+        account.debit(1000);
+        double result = account.getBalance();
+        assertEquals(7111.00, result);
+    }
+
 }

@@ -1,107 +1,103 @@
 package projects.bank;
 
-/**
- * Represents a simple bank account.
- *
- * <p>Account instances have an immutable account ID, owner name, and account type.
- * The balance is mutable and initialized via the constructor's initialBalance parameter.
- *
- * <p>This class performs basic null checks in the constructor and will throw
- * {@link IllegalArgumentException} when required constructor parameters are null.
- */
-public class Account {
-    
-    private final String accountID;
+import java.lang.Math;
+abstract class Account {
+
+    private final String id;
     private final String ownerName;
     private double balance;
-    private final AccountType accountType;
 
     /**
-     * Create a new Account.
-     *
-     * @param accountID      unique identifier for the account; must be non-null
-     * @param ownerName      name of the account owner; must be non-null
-     * @param accountType    type of the account; must be non-null
-     * @param initialBalance initial balance for the account (may be negative if allowed by business rules)
-     *
-     * @throws IllegalArgumentException if {@code accountID}, {@code ownerName}, or {@code accountType} is null
+     * 
+     * @param id Unique alphanumeric id for this account.
+     * @param ownerName Name of this account's owner.
+     * @param balance Initial balance of this account.
+     * @param type Type of account this is.
+     * 
+     * @throws IllegalArgumentException If id is null or ownerName is null.
      */
-    public Account(String accountID, String ownerName, AccountType accountType, double initialBalance) {
-
-        if(accountID != null){
-            this.accountID = accountID;
+    protected Account(String id, String ownerName, double balance) {
+        if (id != null) {
+            this.id = id;
         } else {
-            throw new IllegalArgumentException(
-                "The ID parameter should not be null nor empty."
-                );
+            throw new IllegalArgumentException("id cannot be null");
         }
-        
-        if(ownerName != null){
+
+        if (ownerName != null) {
             this.ownerName = ownerName;
         } else {
-            throw new IllegalArgumentException(
-                "The name parameter can not be null nor empty."
-                );
+            throw new IllegalArgumentException("ownerName cannot be null");
         }
-
-        this.balance = initialBalance;
-
-        if(accountType != null){
-            this.accountType = accountType;
-        } else {
-            throw new IllegalArgumentException(
-                "The Account type can not be null nor empty."
-            );
-        }
+        
+        this.balance = balance;
     }
 
-    /**
-     * Returns the account's identifier.
-     *
-     * @return non-null account ID
-     */
-    public String getAccountID() {
-        return accountID;
+    public String getID() { return id; }
+    public String getOwnerName() { return ownerName; }
+    public double getBalance() { return balance; }
+    abstract AccountType getType();
+
+     public String toString() {
+        return String.format(
+            "%s,%s,%s,%.2f", // format double to 2 decimal places
+            getType().name().toLowerCase(),
+            getID(),
+            getOwnerName(),
+            getBalance()
+        );
     }
 
-    /**
-     * Returns the owner's name.
-     *
-     * @return non-null owner name
-     */
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    /**
-     * Returns the current balance of the account.
-     *
-     * @return the account balance as a double
-     */
-    public double getBalance() {
-        return balance;
-    }
-
-     public AccountType getType() { 
-        return accountType; 
+    public String toCSV() {
+        return toString();
     }
 
     public static Account make(String inputLine){
-        if (inputLine == null){
-            throw new IllegalArgumentException("Param inputLine can't be null.");
+        if (inputLine == null) {
+            throw new IllegalArgumentException("inputLine cannot be null");
         }
-        //.split returns an array based on where you split the values so this array contains 4 values
         String[] tokens = inputLine.split(",");
+        // throws on invalid type
         AccountType type = AccountType.valueOf(tokens[0].toUpperCase());
         String id = tokens[1];
-        String owner = tokens[2];
-        double funds = Double.parseDouble(tokens[3]);
+        String ownerName = tokens[2];
+        double balance = (double) Double.valueOf(tokens[3]);
+        if (type == AccountType.CHECKING) {
+            return new CheckingAccount(id, ownerName, balance);
+        } else {
+            return new SavingsAccount(id, ownerName, balance);
+        }
+        
 
-        return new Account(id, owner, type, funds);
+        
     }
 
-    public String toCSV(){
-        return accountType + "," + accountID + "," + ownerName + "," + balance;
+    // TODO javadoc
+    public void credit(double amount) {
+        if(amount > 0){
+            balance += amount;
+            balance *= 100.0;
+            balance = (int) balance;
+            balance /= 100.0;
+        } else {
+            System.out.println("Amount must be greater than 0!");
+        }
+    }
+
+    // TODO javadoc
+    public void debit(double amount) {
+        if(amount > 0){
+            if(balance >= amount){
+                balance -= amount;
+                balance *= 100.0;
+                balance = (int) balance;
+                balance /= 100.0;
+            } else {
+                System.out.println("The withdrawl amount: " + amount + " is greater than the current balance: " + balance);
+            }
+        } else {
+            System.out.println("Amount must be greater than 0!");
+        }
+        
     }
 
 }

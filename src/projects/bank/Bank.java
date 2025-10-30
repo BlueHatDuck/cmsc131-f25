@@ -115,7 +115,12 @@ public class Bank {
     public Account[] getAccounts(){
         return accounts;
     }
-
+    
+    /**
+     * Process transactions that are stored in a CSV file.
+     * @param fileName - Points to CSV file.
+     * @return - Number of transactions that were processed.
+     */
     public int processTransactions(String filename ){
         int numTrsProc = 0;
         Scanner scan;

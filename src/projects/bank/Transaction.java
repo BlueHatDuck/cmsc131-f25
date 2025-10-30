@@ -16,15 +16,28 @@ abstract class Transaction {
 
     // abstract methods, to be overridden by subclasses
     
-    // TODO javadoc
+    /*
+     * abstract method that will either execute the credit or debit method in account
+     * @param - the account that's balnce will change
+     */
     abstract void execute(Account account);
     
-    // TODO javadoc
+    /*
+     * checks if the execute method should be allowed to be performed
+     * @param - the account that the method execute is used on
+     * @return - returns true if validation succeds, false otherwise
+     */
     abstract boolean validate(Account account);
 
     // concrete methods
 
-    // TODO javadoc
+    
+    /**
+     * Constructs a Transaction for the specified account and amount.
+     * @param accountID can't be null, identifies the account associated with this transaction
+     * @param amount total being credited or debited
+     * @throws IllegalArgumentException if accountID is null
+     */
     protected Transaction(String accountID, double amount) {
         if(accountID != null){
             this.accountID = accountID;
@@ -35,7 +48,13 @@ abstract class Transaction {
         this.amount = amount;
     }
 
-    // TODO javadoc
+    
+    /**
+     * Creates a Transaction instance by passing through the input
+     * @param inputLine a line from teh CSV
+     * @return a Withdrawal or Deposit constructed from the tokens
+     * @throws IllegalArgumentException if inputLine is null or if TYPE is not a valid TransactionType
+     */
     protected static Transaction make(String inputLine) {
         if (inputLine == null) {
             throw new IllegalArgumentException("Parameter inputLine cannot be null.");

@@ -1,24 +1,31 @@
-/**
- * TODO list
- * 
- * correct the call to Account's debit method. double check its input requirement
- * 
- * implement validation. move the logic from the inner conditional in debit into your validate method
- */
+
 package projects.bank;
 
 public class Withdrawal extends Transaction {
-
+    /*
+     * Constructer for the class
+     * @param accountID - ID of the account going through a transaction 
+     * @param amount - amount credited to the account that 
+     */
     public Withdrawal(String accountID, double amount) {
         super(accountID, amount);
     }
 
+    /*
+     * Calls the debit method
+     * @param account - account the deposit is applied to
+     */
     @Override
     public void execute(Account account) {
         double amount = super.getAmount();
         account.debit(amount);
     }
 
+    /*
+     * Checks to make sure execute is allowed to be performed
+     * @param - account the deposit must be validated for
+     * @return - true if amount is greater than zero and balance is larger than or equal to amount, false if either condition is false
+     */
     @Override 
     public boolean validate(Account account) {
         double balance = account.getBalance();

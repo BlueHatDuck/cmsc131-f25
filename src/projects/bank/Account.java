@@ -70,7 +70,10 @@ abstract class Account {
         
     }
 
-    // TODO javadoc
+    /*
+     * adds amount to balance
+     * @param x value to increase account balance by
+     */
     public void credit(double amount) {
         balance += amount;
         balance *= 100.0;
@@ -78,7 +81,10 @@ abstract class Account {
         balance /= 100.0;
     }
 
-    // TODO javadoc
+    /*
+     * subtracts amount to balance
+     * @param x value to increase account balance by
+     */
     public void debit(double amount) {
         balance -= amount;
         balance *= 100.0;

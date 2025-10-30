@@ -1,3 +1,12 @@
+/**
+ * TODO list
+ * 
+ * write accessor for amount
+ * 
+ * consider validating amount in constructor
+ * 
+ * javadocs
+ */
 package projects.bank;
 
 abstract class Transaction {
@@ -20,16 +29,16 @@ abstract class Transaction {
         if(accountID != null){
             this.accountID = accountID;
         } else {
-            throw new IllegalArgumentException("id cannot be null");
+            throw new IllegalArgumentException("Parameter id cannot be null.");
         }
-
+        
         this.amount = amount;
     }
 
     // TODO javadoc
     protected static Transaction make(String inputLine) {
         if (inputLine == null) {
-            throw new IllegalArgumentException("inputLine cannot be null");
+            throw new IllegalArgumentException("Parameter inputLine cannot be null.");
         }
         String[] tokens = inputLine.split(",");
         TransactionType type = TransactionType.valueOf(tokens[0].toUpperCase());
@@ -47,6 +56,12 @@ abstract class Transaction {
     public String getAccountID() {
         return accountID;
     }
+
+    public double getAmount(){
+        return amount;
+    }
+
+    abstract TransactionType getType();
 
 
 

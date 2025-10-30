@@ -123,16 +123,23 @@ public class Bank {
             scan = new Scanner(new File(filename));
             while (scan.hasNextLine()) {
                 Transaction trs = Transaction.make(scan.nextLine());
-                int exists = find(trs.getAccountID())
+                int exists = find(trs.getAccountID());
                 if(exists != -1){
                     Account target = accounts[find(trs.getAccountID())];
+                    if(trs.validate(target)){
+                        trs.execute(target);
+                    }
+                } else {
+                    System.out.println("Account " + trs.getAccountID() + " not found.");
                 }
+                numTrsProc++;
             }
-        } catch {
-            
+            scan.close();
+        } catch (FileNotFoundException e){ 
+            e.printStackTrace();
         }
         
-        return -1;
+        return numTrsProc;
     }
 
 

@@ -206,14 +206,14 @@ public class BankTest {
 
     @Test
     void testProcessTransactionsFailure() {
-        // TODO
-        // pass bad filename and check number of transactions processed
+        int result = bank.processTransactions("not/a/file.csv");
+        assertEquals(result, 0);
     }
 
     @Test
     void testProcesTransactionsSuccess() {
-        // TODO
-        // pass data/testtransactions.csv and check number of transactions processed
+        int result = bank.processTransactions("data/testtransactions.csv");
+        assertEquals(result, 4);
     }
 
 } // end: class BankTest

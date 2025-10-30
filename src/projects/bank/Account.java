@@ -1,6 +1,5 @@
 package projects.bank;
 
-import java.lang.Math;
 abstract class Account {
 
     private final String id;
@@ -73,31 +72,18 @@ abstract class Account {
 
     // TODO javadoc
     public void credit(double amount) {
-        if(amount > 0){
-            balance += amount;
-            balance *= 100.0;
-            balance = (int) balance;
-            balance /= 100.0;
-        } else {
-            System.out.println("Amount must be greater than 0!");
-        }
+        balance += amount;
+        balance *= 100.0;
+        balance = (int) balance;
+        balance /= 100.0;
     }
 
     // TODO javadoc
     public void debit(double amount) {
-        if(amount > 0){
-            if(balance >= amount){
-                balance -= amount;
-                balance *= 100.0;
-                balance = (int) balance;
-                balance /= 100.0;
-            } else {
-                System.out.println("The withdrawl amount: " + amount + " is greater than the current balance: " + balance);
-            }
-        } else {
-            System.out.println("Amount must be greater than 0!");
-        }
-        
+        balance -= amount;
+        balance *= 100.0;
+        balance = (int) balance;
+        balance /= 100.0;        
     }
 
 }

@@ -84,5 +84,12 @@ public class AccountTest {
         double result = account.getBalance();
         assertEquals(7111.00, result);
     }
+    
+    @Test
+    void testCredit() {
+        account.credit(1000);
+        double result = account.getBalance();
+        assertEquals(9111.00, result);
+    }
 
 }

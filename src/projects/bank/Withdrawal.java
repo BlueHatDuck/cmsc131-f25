@@ -16,29 +16,22 @@ public class Withdrawal extends Transaction {
      * @param account - account the deposit is applied to
      */
     @Override
-    public void execute(Account account) {
-        double amount = super.getAmount();
-        account.debit(amount);
+    public void execute(Account account, Audit audit) {
+        account.debit(getAmount());
+        audit.recordExecute(this, account);
     }
 
     /*
      * Checks to make sure execute is allowed to be performed
      * @param - account the deposit must be validated for
-     * @return - true if amount is greater than zero and balance is larger than or equal to amount, false if either condition is false
+     * @return - true if balance is larger than or equal to amount, false if not
      */
     @Override 
-    public boolean validate(Account account) {
-        double balance = account.getBalance();
-        double amount = super.getAmount();
-        if(amount > 0){
-            if(balance >= amount){
-                return true;
-            } else {
-                System.out.println("The withdrawl amount: " + amount + " is greater than the current balance: " + balance);
-                return false;
-            }
+    public boolean validate(Account account, Audit audit) {
+        if(getAmount() <= account.getBalance()){
+            return true;
         } else {
-            System.out.println("Amount must be greater than 0!");
+            audit.recordNonsufficientFunds(this, account);
             return false;
         }
     }

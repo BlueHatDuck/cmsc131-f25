@@ -16,26 +16,20 @@ public class Deposit extends Transaction {
      * @param account - account the deposit is applied to
      */
     @Override
-    public void execute(Account account) {
-        double amount = super.getAmount();
-        account.credit(amount);
+    public void execute(Account account, Audit audit) {
+        account.credit(getAmount());
+        audit.recordExecute(this, account);
     }
 
 
     /*
      * Checks to make sure execute is allowed to be performed
      * @param - account the deposit must be validated for
-     * @return - true if succesful false if not
+     * @return - true
      */
     @Override 
-    public boolean validate(Account account) {
-        double amount = super.getAmount();
-        if(amount > 0){
-            return true;
-        } else {
-            System.out.println("Amount must be greater than 0!");
-            return false;
-        }
+    public boolean validate(Account account, Audit audit) {
+       return true;
     }
     
     /*

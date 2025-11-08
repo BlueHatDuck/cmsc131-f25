@@ -20,14 +20,14 @@ abstract class Transaction {
      * abstract method that will either execute the credit or debit method in account
      * @param - the account that's balnce will change
      */
-    abstract void execute(Account account);
+    abstract void execute(Account account, Audit audit);
     
     /*
      * checks if the execute method should be allowed to be performed
      * @param - the account that the method execute is used on
      * @return - returns true if validation succeds, false otherwise
      */
-    abstract boolean validate(Account account);
+    abstract boolean validate(Account account, Audit audit);
 
     // concrete methods
 
@@ -39,13 +39,19 @@ abstract class Transaction {
      * @throws IllegalArgumentException if accountID is null
      */
     protected Transaction(String accountID, double amount) {
-        if(accountID != null){
-            this.accountID = accountID;
-        } else {
-            throw new IllegalArgumentException("Parameter id cannot be null.");
+        if (accountID == null) {
+            throw new IllegalArgumentException(
+                "Parameter accountID cannot be null."
+            ); 
         }
-        
-        this.amount = amount;
+        else if (amount <= 0) {
+            throw new IllegalArgumentException(
+                "Parameter amount must be positive."
+            ); // tested by testConstructorDataValidation
+        } else {
+            this.accountID = accountID;
+            this.amount = amount;
+        } 
     }
 
     

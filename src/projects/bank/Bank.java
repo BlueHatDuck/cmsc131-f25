@@ -121,26 +121,32 @@ public class Bank {
      * @param fileName - Points to CSV file.
      * @return - Number of transactions that were processed.
      */
-    public int processTransactions(String filename ){
+    public int processTransactions(String trsFileName, String auditFileName){
         int numTrsProc = 0;
-        Scanner scan;
         try {
-            scan = new Scanner(new File(filename));
-            while (scan.hasNextLine()) {
-                Transaction trs = Transaction.make(scan.nextLine());
-                int exists = find(trs.getAccountID());
-                if(exists != -1){
-                    Account target = accounts[find(trs.getAccountID())];
-                    if(trs.validate(target)){
-                        trs.execute(target);
+            Audit audit = new Audit(auditFileName);
+            Scanner scan;
+            try {
+                scan = new Scanner(new File(trsFileName));
+                while (scan.hasNextLine()) {
+                    Transaction trs = Transaction.make(scan.nextLine());
+                    int exists = find(trs.getAccountID());
+                    if(exists != -1){
+                        Account target = accounts[find(trs.getAccountID())];
+                        if(trs.validate(target, audit)){
+                            trs.execute(target, audit);
+                        }
+                    } else {
+                        audit.recordNoSuchAccount(trs);
                     }
-                } else {
-                    System.out.println("Account " + trs.getAccountID() + " not found.");
+                    numTrsProc++;
                 }
-                numTrsProc++;
+                scan.close();
+            } catch (FileNotFoundException e){ 
+                e.printStackTrace();
             }
-            scan.close();
-        } catch (FileNotFoundException e){ 
+            audit.close();
+        } catch (IOException e){
             e.printStackTrace();
         }
         

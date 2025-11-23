@@ -1,3 +1,6 @@
+/** TODO
+ * write tests for recordNSF and recordValis
+ */
 package projects.bank;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Bank {
@@ -130,9 +129,9 @@ public class Bank {
                 scan = new Scanner(new File(trsFileName));
                 while (scan.hasNextLine()) {
                     Transaction trs = Transaction.make(scan.nextLine());
-                    int exists = find(trs.getAccountID());
-                    if(exists != -1){
-                        Account target = accounts[find(trs.getAccountID())];
+                    int targetIdx = find(trs.getAccountID());
+                    if(targetIdx != -1){
+                        Account target = accounts[targetIdx)];
                         if(trs.validate(target, audit)){
                             trs.execute(target, audit);
                         }

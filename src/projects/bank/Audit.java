@@ -12,7 +12,7 @@ public class Audit {
         }
         writer = new FileWriter(fileName);
     }
-    
+ 
     public void close() {
         try {
             writer.flush();

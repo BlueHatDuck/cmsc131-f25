@@ -31,6 +31,7 @@ public class Cell {
     public Cell(Coords c, CellStatus s) {
         coords = c;
         setStatus(s);
+        neighbors = new Coords[4];
         setNeighbors();
         explored = false;
     }
@@ -68,21 +69,27 @@ public class Cell {
     public void setNeighbors(){
 
         Coords south = new Coords(coords.getRow() + 1, coords.getCol());
-        Coords east = new Coords(coords.getRow(), coords.getCol() - 1);
+        Coords east = new Coords(coords.getRow(), coords.getCol() + 1);
 
-        if(coords.getCol() != 0 && coords.getRow() != 0){
+        if(coords.getCol() == 0 && coords.getRow() == 0){
+            neighbors[0] = null;
+            neighbors[1] = null;
+        } else if (coords.getCol() == 0){
+            Coords north = new Coords(coords.getRow() - 1, coords.getCol());
+            neighbors[0] = north;
+            neighbors[1] = null;
+        } else if (coords.getRow() == 0){
+            Coords west = new Coords(coords.getRow(), coords.getCol() - 1);
+            neighbors[0] = null;
+            neighbors[1] = west;
+        } else {
             Coords north = new Coords(coords.getRow() - 1, coords.getCol());
             Coords west = new Coords(coords.getRow(), coords.getCol() - 1);
-            neighbors = new Coords[4];
             neighbors[0] = north;
-            neighbors[1] = south;
-            neighbors[2] = west;
-            neighbors[3] = east;
-        } else {
-            neighbors = new Coords[2];
-            neighbors[0] = south;
-            neighbors[1] = east;
+            neighbors[1] = west;
         }
+            neighbors[2] = south;
+            neighbors[3] = east;
     }
 
 }

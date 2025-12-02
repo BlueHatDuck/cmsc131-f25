@@ -25,8 +25,34 @@ public class Maze {
         grid = new Grid(maxCells);
     }
 
-    public void discoverAndSetupNeighbors() {
+    public Cell getStart(){
+        Cell[] c = grid.getAllCells();
+        for(int i = 0; i < grid.getCellCount(); i++){
+            if(c[i].getStatus().equals(CellStatus.valueOf("S"))){
+                return c[i];
+            }
+        }
 
+        return null;
+    }
+
+    public Cell getEnd(){
+        Cell[] c = grid.getAllCells();
+        for(int i = 0; i < grid.getCellCount(); i++){
+            if(c[i].getStatus().equals(CellStatus.valueOf("E"))){
+                return c[i];
+            }
+        }
+
+        return null;
+    }
+
+    public void discoverAndSetupNeighbors() {
+        Cell[] c = grid.getAllCells();
+        for (Cell cell : c) {
+           cell.setNeighbors(); 
+        }
+        
     }
 
     /**

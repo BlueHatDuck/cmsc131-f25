@@ -1,8 +1,8 @@
 package projects.maze;
 
 public enum CellStatus {
-    S,
-    E,
-    O,
-    P
+    S, // start
+    E, // end
+    O, // open
+    P  // on path
 }

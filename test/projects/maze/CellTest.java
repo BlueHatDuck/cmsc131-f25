@@ -19,6 +19,19 @@ public class CellTest {
     }
 
     @Test
+    void testConstructor(){
+        Exception e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {new Cell(null, status);}
+        );
+        // assertEquals(compare messages)
+        e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {new Cell(coords, null);}
+        );
+    }
+
+    @Test
     public void invalidStatus(){
         Exception e = assertThrows(
         IllegalArgumentException.class, 

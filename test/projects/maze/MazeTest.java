@@ -14,7 +14,8 @@ public class MazeTest {
     @Before
     public void setupMaze() {
         maze = new Maze(100);
-        maze.serialize("data/sample_maze.txt");
+        maze.serialize("data/MazeTest-setupMaze.txt");
+        // avoid overwriting an input file
     }
 
     @Test

@@ -4,6 +4,30 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 public class CellTest {
+    private Cell cell;
+    private Coords coords;
+    private CellStatus status;
+
+    @BeforeEach
+    void setup(){
+        coords = new Coords(0, 0);
+        status = CellStatus.S;
+        cell = new Cell(coords, status);
+    }
+
+    @Test
+    void testConstructor(){
+        Exception e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {new Cell(null, status);}
+        );
+        // assertEquals(compare messages)
+        e = assertThrows(
+            IllegalArgumentException.class,
+            () -> {new Cell(coords, null);}
+        );
+    }
+
     @Test
     void constructorDataValidation() {
         Exception e = assertThrows(

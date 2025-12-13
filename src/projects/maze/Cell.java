@@ -1,95 +1,56 @@
-/** `Cell` class additions
-
-Extra attributes
-
-- `neighbors` (Coords[]) - coordinates of neighbors
-    - needs accessor/mutator
-
-- `explored` (boolean) - traversal flag (defaults to false)
-    - needs accessor/mutator
-
-- `status` (CellStatus enum) - cell's role/state
-    - Enum values    
-        - `S` maze entrance
-        - `E` maze exit  
-        - `O` open cell
-        - `P` part of solution path
-    - Needs accessor/mutator
-
-A cell will be constructed with a coordinates and a status. Decide for yourself what are sensible default values (if any) for the other attributes.
- */
-
 package projects.maze;
 
 public class Cell {
 
     private final Coords coords;
-    private CellStatus status;
     private Coords[] neighbors;
     private boolean explored;
+    private CellStatus status;
 
+    /**
+     * Construct a new cell from the given coordinates and cell status. 
+     * Defaults to unexplored state.
+     * @param c Coordinates of this cell
+     * @param s Status of this cell
+     */
     public Cell(Coords c, CellStatus s) {
+        if (c == null) {
+            throw new IllegalArgumentException("Parameter c cannot be null");
+        }
+        if (s == null) {
+            throw new IllegalArgumentException("Parameter s cannot be null");
+        }
         coords = c;
-        setStatus(s);
-        neighbors = new Coords[4];
-        setNeighbors();
         explored = false;
+        status = s;
     }
 
     public Coords getCoords() {
         return coords;
     }
 
-    public CellStatus getStatus(){
-        return status;
-    }
-
-    public void setStatus(CellStatus st){
-        String s = String.valueOf(st);
-        if(s.toUpperCase().equals("S") || s.toUpperCase().equals("E") || 
-        s.toUpperCase().equals("O") || s.toUpperCase().equals("P")){
-            status = st;
-        } else {
-            throw new IllegalArgumentException("Status must be either S, E, O, or P!");
-        }
-    }
-
-    public boolean getExplored(){
+    public boolean isExplored() {
         return explored;
     }
 
-    public void setExplored(boolean torf){
-        explored = torf;
+    public void setExplored(boolean updateExplored) {
+        explored = updateExplored;
     }
-
-    public Coords[] getNeighbors(){
+    
+    public Coords[] getNeighbors() {
         return neighbors;
     }
 
-    public void setNeighbors(){
+    public void setNeighbors(Coords[] neighbors) {
+        this.neighbors = neighbors;
+    }
+    
+    public CellStatus getStatus() {
+        return status;
+    }
 
-        Coords south = new Coords(coords.getRow() + 1, coords.getCol());
-        Coords east = new Coords(coords.getRow(), coords.getCol() + 1);
-
-        if(coords.getCol() == 0 && coords.getRow() == 0){
-            neighbors[0] = null;
-            neighbors[1] = null;
-        } else if (coords.getCol() == 0){
-            Coords north = new Coords(coords.getRow() - 1, coords.getCol());
-            neighbors[0] = north;
-            neighbors[1] = null;
-        } else if (coords.getRow() == 0){
-            Coords west = new Coords(coords.getRow(), coords.getCol() - 1);
-            neighbors[0] = null;
-            neighbors[1] = west;
-        } else {
-            Coords north = new Coords(coords.getRow() - 1, coords.getCol());
-            Coords west = new Coords(coords.getRow(), coords.getCol() - 1);
-            neighbors[0] = north;
-            neighbors[1] = west;
-        }
-            neighbors[2] = south;
-            neighbors[3] = east;
+    public void setStatus(CellStatus updateStatus) {
+        status = updateStatus;
     }
 
 }

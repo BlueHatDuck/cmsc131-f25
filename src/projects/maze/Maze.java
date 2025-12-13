@@ -1,16 +1,3 @@
-/** Maze class specification
-
-- `Maze(int maxCells)` - pre-allocates array to maximum size
-
-- `getStart()` - finds and returns the cell with Status Start
-
-- `getEnd()` - finds and returns the cell with Status End
-    - Consider writing a helper method `getFirstCellWithStatus(Status)` which does linear search
-
-- setupNeighbors() populates the neighbors list of each cell in the grid
-
- */
-
 package projects.maze;
 
 import java.io.File;
@@ -25,42 +12,104 @@ public class Maze {
         grid = new Grid(maxCells);
     }
 
-    public Cell getStart(){
-        Cell[] c = grid.getAllCells();
-        for(int i = 0; i < grid.getCellCount(); i++){
-            if(c[i].getStatus().equals(CellStatus.valueOf("S"))){
-                return c[i];
+    /**
+     * Alias for {@code grid::getAllCells} for underlying grid.
+     * @return Array of all cells in this maze, without {@code null} elements.
+     */
+    public Cell[] getAllCells() {
+        return grid.getAllCells();
+    }
+
+    private Cell getFirstCellWithStatus(CellStatus status) {
+        if (status == null) {
+            throw new IllegalArgumentException(
+                "Parameter status cannot be null"
+            );
+        }
+        Cell[] cells = grid.getAllCells();
+        for (int idx = 0; idx < cells.length; idx++) {
+            if (cells[idx].getStatus() == status) {
+                return cells[idx];
             }
         }
-
         return null;
     }
 
-    public Cell getEnd(){
-        Cell[] c = grid.getAllCells();
-        for(int i = 0; i < grid.getCellCount(); i++){
-            if(c[i].getStatus().equals(CellStatus.valueOf("E"))){
-                return c[i];
-            }
-        }
-
-        return null;
+    private Cell getEnd() {
+        return getFirstCellWithStatus(CellStatus.E);
     }
 
-    public void discoverAndSetupNeighbors() {
-        Cell[] c = grid.getAllCells();
-        for (Cell cell : c) {
-           cell.setNeighbors(); 
-        }
-        
+    private Cell getStart() {
+        return getFirstCellWithStatus(CellStatus.S);
     }
 
     /**
-     * Provided by Dusel. Assumes grid cell has a getStatus() method.
-     * @param filename - Output filename.
+     * Alias for this maze's underlying grid::insertCell.
+     * @param cell Cell to be inserted.
+     * @return true if and only insertion is successful.
      */
-    public void serialize(String filename) {
+    public boolean insertCell(Cell cell) {
+        if (cell == null) {
+            throw new IllegalArgumentException(
+                "Parameter cell cannot be null"
+            );
+        }
+        return grid.insertCell(cell);
+    }
+
+    /**
+     * This method is public for testing purposes only. 
+     * See javadoc for {@code Maze::discoverAndSetupNeighbors}
+     * @param cell Not validated, due to usage in discoverAndSetupNeighbors.
+     * @return Array containing coordinates of neighbor cells in this maze.
+     */
+    public Coords[] discoverNeighbors(Cell cell) {
+        if (cell == null) {
+            throw new IllegalArgumentException(
+                "Parameter cell cannot be null"
+            );
+        }
+        Coords coords = cell.getCoords();
+        Coords[] potentialNeighbors = {
+            new Coords(coords.getRow() - 1, coords.getCol()), // north
+            new Coords(coords.getRow() + 1, coords.getCol()), // south
+            new Coords(coords.getRow(), coords.getCol() + 1), // east
+            new Coords(coords.getRow(), coords.getCol() - 1) // west
+        };
+        Coords[] neighbors = new Coords[potentialNeighbors.length];
+        int neighborsCount = 0;
+        for (Coords offset : potentialNeighbors) {
+            if (grid.getCell(offset) != null) {
+                neighbors[neighborsCount++] = offset;
+            }
+        }
+        Coords[] toReturn = new Coords[neighborsCount];
+        for (int idx = 0; idx < neighborsCount; idx++) { // trim nulls
+            toReturn[idx] = neighbors[idx];
+        }
+        return toReturn;
+    }
+
+    /**
+     * Populates {@code neighbors} attribute of each cell in this maze's 
+     * underlying grid. Neighbor cells are scanned in NSEW order.
+     */
+    public void discoverAndSetupNeighbors() {
         Cell[] cells = grid.getAllCells();
+        for (int idxCell = 0; idxCell < cells.length; idxCell++) {
+            Cell cell = cells[idxCell];
+            Coords[] neighbors = discoverNeighbors(cell);
+            cell.setNeighbors(neighbors);
+        }
+    }
+
+    public void serialize(String filename) {
+        if (filename == null) {
+            throw new IllegalArgumentException(
+                "Parameter filename cannot be null"
+            );
+        }
+        Cell[] cells = getAllCells();
 
         FileWriter writer;
         try {
@@ -97,6 +146,42 @@ public class Maze {
             e.printStackTrace();
         }
         
+    }
+
+    /* 
+    Maps a path in the maze
+    returns the result of dfs
+    */
+    public boolean solve() {
+        if(dfs(getStart())){
+            return true;
+        }
+        System.out.println("Path not found");
+        return false;
+    }
+
+    /*
+    *Expanded depth first search method, which highlights a path to the exit
+    *@parma a cell with a status S, O, P, or E
+    *@return returns true if eit is found, false otherwise
+    */
+    private boolean dfs(Cell c) {
+        c.setExplored(true);
+        if(c.getStatus() == CellStatus.E){
+            return true;
+        }
+        if(c.getStatus() == CellStatus.O){
+            c.setStatus(CellStatus.P);
+        }
+        for (Coords crds: c.getNeighbors()) {
+            Cell adjCell = grid.getCell(crds);
+            if(adjCell.isExplored() == false){
+                if (dfs(adjCell))
+                return true;
+            }
+        }
+        c.setStatus(CellStatus.O);
+        return false;
     }
 
 }
